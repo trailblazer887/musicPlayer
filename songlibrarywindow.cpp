@@ -9,12 +9,13 @@ SongLibraryWindow::SongLibraryWindow(QWidget *parent) :
     QDialog(parent),
     songList(new QListWidget(this))
 {
+    // 窗口标题，尺寸
     this->setWindowTitle("歌曲库");
     this->resize(400, 300);
 
     // 创建按钮
     QPushButton *importBtn = new QPushButton("导入歌曲", this);
-    QPushButton *confirmBtn = new QPushButton("确定选择", this);
+    QPushButton *confirmBtn = new QPushButton("确定", this);
     QPushButton *cancelBtn = new QPushButton("取消", this);
 
     // 布局（纯代码）

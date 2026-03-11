@@ -19,11 +19,12 @@ MainWindow::MainWindow(QWidget *parent) :
     audioOutput->setVolume(1.0);
 
     // 初始化控件
-    ui->playPauseBtn->setText("播放");
-    ui->progressSlider->setRange(0, 100);
+    ui->playPauseBtn->setText("播放"); // 按钮文字为"播放"
+    ui->progressSlider->setRange(0, 1000); // 初始化进度条
     ui->progressSlider->setValue(0);
-    ui->prevSongBtn->setEnabled(false);
+    ui->prevSongBtn->setEnabled(false); // 上/下一曲按钮关闭
     ui->nextSongBtn->setEnabled(false);
+    ui->progressSlider->setSingleStep(40); // 键盘改变进度条的幅度
 
     // 定时器：每500ms更新进度条
     progressTimer->setInterval(500);
@@ -67,16 +68,16 @@ void MainWindow::on_playPauseBtn_clicked()
 void MainWindow::on_progressSlider_sliderMoved(int position)
 {
     if (player->duration() > 0) {
-        qint64 newPos = (player->duration() * position) / 100;
+        qint64 newPos = (player->duration() * position) / 1000;
         player->setPosition(newPos);
     }
 }
 
-// 实时更新进度条
+// 实时更新进度条(由"定时器"驱动)
 void MainWindow::updateProgressBar()
 {
     if (player->duration() > 0) {
-        int progress = (player->position() * 100) / player->duration();
+        int progress = (player->position() * 1000) / player->duration();
         ui->progressSlider->setValue(progress);
     }
 }
