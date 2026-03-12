@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
-#include <QDebug>
+#include <QIcon>
 
 int main(int argc, char *argv[])
 {
@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.setWindowTitle("音乐播放器");
+    w.setWindowIcon(QIcon("musicicon.png"));
     w.resize(847, 558);
     w.show();
 

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>musicicon.png</normaloff>musicicon.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QSlider" name="progressSlider">
     <property name="geometry">
@@ -40,7 +44,7 @@
      <string>打开歌曲库</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>120</x>
