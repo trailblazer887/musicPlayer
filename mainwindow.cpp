@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"       // 自动生成的UI头文件
 #include "songlibrarywindow.h"   // 歌库窗口头文件
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     progressTimer(new QTimer(this))
 {
     ui->setupUi(this); // 加载主窗口UI
+
+    qApp->installEventFilter(this); // 安装事件过滤器
 
     // 初始化播放器
     player = new QMediaPlayer(this);
@@ -121,3 +124,41 @@ void MainWindow::handleSongSelected(const QString &songPath)
     ui->prevSongBtn->setEnabled(true);
     ui->nextSongBtn->setEnabled(true);
 }
+
+// 事件处理 Filter
+bool MainWindow::eventFilter(QObject *obj, QEvent *event){
+    if (event->type() == QEvent::KeyPress){ // 识别事件是否是键盘按下
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Right){ // 如果是右方向键
+            if (player->playbackState() == QMediaPlayer::StoppedState){ // 如果是没有歌曲正在播放或暂停(没有选择歌曲)
+                return true;
+            }
+            qint64 currentPos = player->position();
+            qint64 newPos = currentPos + 6000; // 若右方向键合法，歌曲加6000毫秒(6秒)
+            if (newPos > player->duration()){ // 防止加后溢出
+                newPos = player->duration();
+            }
+            player->setPosition(newPos);
+            int sliderValue = static_cast<int>(newPos * 1000 / player->duration());
+            ui->progressSlider->setValue(sliderValue);
+            return true;
+        }else if (keyEvent->key() == Qt::Key_Left){ // 如果是左方向键
+            if (player->playbackState() == QMediaPlayer::StoppedState){ // 如果是没有歌曲正在播放或暂停(没有选择歌曲)
+                return true;
+            }
+            qint64 currentPos = player->position();
+            qint64 newPos = currentPos - 6000; // 若左方向键合法，歌曲减6000毫秒(6秒)
+            if (newPos < 0){
+                newPos = 0;
+            }
+            player->setPosition(newPos);
+            int sliderValue = static_cast<int>(newPos * 1000 / player->duration());
+            ui->progressSlider->setValue(sliderValue);
+            return true;
+        }
+    }
+    return QMainWindow::eventFilter(obj, event); // 其他事件默认处理;
+}
+
+
+

@@ -8,6 +8,7 @@
 #include <QList>
 #include <QUrl>
 #include <QMessageBox>
+#include <QObject>
 
 // 前向声明歌库窗口（避免循环包含）
 class SongLibraryWindow;
@@ -44,6 +45,9 @@ private:
     QList<QUrl> songList;               // 手动播放列表（存储歌曲路径）
     int currentSongIndex;               // 当前播放下标（-1=无歌曲）
     QTimer *progressTimer;              // 进度条定时器
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
 };
 
 #endif // MAINWINDOW_H
