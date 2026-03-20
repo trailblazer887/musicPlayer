@@ -95,6 +95,19 @@ void MainWindow::on_openLibraryBtn_clicked()
     songLibWindow->show();
 }
 
+// 处理歌库选中的歌曲(当收到songSelected信号时)
+void MainWindow::handleSongSelected(const QString &songPath)
+{
+    songList.clear(); // 清理songList
+    songList.append(QUrl::fromLocalFile(songPath)); // 将歌曲添加入songList
+    currentSongIndex = 0; // 将歌曲索引设置为0
+    player->setSource(songList[currentSongIndex]); // 加载索引为0处的资源
+    player->play(); // 播放
+    // 开放上/下曲开关
+    ui->prevSongBtn->setEnabled(true);
+    ui->nextSongBtn->setEnabled(true);
+}
+
 // 手动上一曲
 void MainWindow::on_prevSongBtn_clicked()
 {
@@ -113,17 +126,6 @@ void MainWindow::on_nextSongBtn_clicked()
     player->play();
 }
 
-// 处理歌库选中的歌曲
-void MainWindow::handleSongSelected(const QString &songPath)
-{
-    songList.clear();
-    songList.append(QUrl::fromLocalFile(songPath));
-    currentSongIndex = 0;
-    player->setSource(songList[currentSongIndex]);
-    player->play();
-    ui->prevSongBtn->setEnabled(true);
-    ui->nextSongBtn->setEnabled(true);
-}
 
 // 事件处理 Filter
 bool MainWindow::eventFilter(QObject *obj, QEvent *event){
