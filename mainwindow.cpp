@@ -98,7 +98,7 @@ void MainWindow::on_openLibraryBtn_clicked()
 // 处理歌库选中的歌曲(当收到songSelected信号时)
 void MainWindow::handleSongSelected(const QString &songPath)
 {
-    songList.clear(); // 清理songList
+    songList.clear(); // 清理songList(这里的songList是歌曲路径列表 QList<QUrl>)
     songList.append(QUrl::fromLocalFile(songPath)); // 将歌曲添加入songList
     currentSongIndex = 0; // 将歌曲索引设置为0
     player->setSource(songList[currentSongIndex]); // 加载索引为0处的资源

@@ -59,13 +59,29 @@ void SongLibraryWindow::on_importBtn_clicked()
     );
 
     if (!songPaths.isEmpty()) { // 判断是否选择文件
+        int importedCount = 0; // 导入歌曲总数
         for (const QString &path : songPaths) { // 遍历选择的文件
             QString songName = QFileInfo(path).baseName(); // 提取歌曲名
-            QListWidgetItem *item = new QListWidgetItem(songName); // 创造单个歌曲的列表项目(包含歌曲名称)
-            item->setData(Qt::UserRole, path); // 存储歌曲完整路径
-            songList->addItem(item); // 将列表项添加至总歌曲列表
+            bool isDuplicate = false; // 初始化"判断重复"变量
+            for (int i = 0; i < songList->count(); i++) { // 检查是否歌名重复
+                QListWidgetItem *exsitingItem = songList->item(i);
+                if (exsitingItem->text() == songName) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            if (!isDuplicate) { // 如果歌名未重复
+                QListWidgetItem *item = new QListWidgetItem(songName); // 创造单个歌曲的列表项目(包含歌曲名称)
+                item->setData(Qt::UserRole, path); // 存储歌曲完整路径
+                songList->addItem(item); // 将列表项添加至总歌曲列表
+                importedCount++;
+            }
         }
-        QMessageBox::information(this, "成功", "导入了 " + QString::number(songPaths.size()) + " 首歌曲！"); // 窗口提示
+        if (importedCount > 0){
+            QMessageBox::information(this, "成功", "共选择 " + QString::number(songPaths.size()) + "首,成功导入" + QString::number(importedCount) + "首(已跳过重复歌曲)!"); // 窗口提示
+        }else {
+            QMessageBox::critical(this, "失败", "所选歌曲均已存在，未导入任何新歌曲!");
+        }
     }
 }
 
