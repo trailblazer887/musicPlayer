@@ -46,6 +46,13 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         }
     });
+
+    // 歌曲播放完后自动切换下一曲
+    connect(player, &QMediaPlayer::mediaStatusChanged, this, [=](QMediaPlayer::MediaStatus status){
+        if (status == QMediaPlayer::EndOfMedia && !songList.isEmpty()){
+            on_nextSongBtn_clicked();
+        }
+    });
 }
 
 MainWindow::~MainWindow()
@@ -88,30 +95,47 @@ void MainWindow::updateProgressBar()
 // 打开歌库
 void MainWindow::on_openLibraryBtn_clicked()
 {
-    if (!songLibWindow) {
-        songLibWindow = new SongLibraryWindow(this);
-        connect(songLibWindow, &SongLibraryWindow::songSelected, this, &MainWindow::handleSongSelected);
+    if (!songLibWindow) { // 如果曾经没有打开歌库
+        songLibWindow = new SongLibraryWindow(this); // 新建歌库窗口
+        connect(songLibWindow, &SongLibraryWindow::songSelected, this, &MainWindow::handleSongSelected); // 接收到songSelected信号后调用函数处理
     }
-    songLibWindow->show();
+    songLibWindow->show(); // 展示窗口
 }
 
 // 处理歌库选中的歌曲(当收到songSelected信号时)
-void MainWindow::handleSongSelected(const QString &songPath)
+void MainWindow::handleSongSelected(const QList<QUrl> &newSongList, int selectedIndex)
 {
-    songList.clear(); // 清理songList(这里的songList是歌曲路径列表 QList<QUrl>)
-    songList.append(QUrl::fromLocalFile(songPath)); // 将歌曲添加入songList
-    currentSongIndex = 0; // 将歌曲索引设置为0
-    player->setSource(songList[currentSongIndex]); // 加载索引为0处的资源
-    player->play(); // 播放
-    // 开放上/下曲开关
-    ui->prevSongBtn->setEnabled(true);
-    ui->nextSongBtn->setEnabled(true);
+    for (const QUrl &url : newSongList) { // 合并新播放列表(去重)
+        if (!songList.contains(url)){
+            songList.append(url);
+        }
+    }
+
+    if (selectedIndex >= 0 && selectedIndex < newSongList.size()){ // 将newSongList中的索引转换为songList中的索引
+        QUrl selectedUrl = newSongList.at(selectedIndex);
+        currentSongIndex = songList.indexOf(selectedUrl);
+    }else {
+        currentSongIndex = 0;
+    }
+
+    if (currentSongIndex >= 0 && currentSongIndex < songList.size()){ // 加载并播放音乐
+        player->setSource(songList[currentSongIndex]);
+        player->play();
+    }
+
+    ui->prevSongBtn->setEnabled(!songList.isEmpty()); // 上/下一曲按钮激活
+    ui->nextSongBtn->setEnabled(!songList.isEmpty());
 }
 
 // 手动上一曲
 void MainWindow::on_prevSongBtn_clicked()
 {
+    if (songList.size() <= 1) {
+        QMessageBox::information(this, "提示", "当前只有一首歌曲!");
+        return;
+    }
     if (songList.isEmpty()) return;
+
     currentSongIndex = (currentSongIndex - 1 + songList.size()) % songList.size();
     player->setSource(songList[currentSongIndex]);
     player->play();
@@ -120,8 +144,13 @@ void MainWindow::on_prevSongBtn_clicked()
 // 手动下一曲
 void MainWindow::on_nextSongBtn_clicked()
 {
+    if (songList.size() <= 1) {
+        QMessageBox::information(this, "提示", "当前只有一首歌曲!");
+        return;
+    }
     if (songList.isEmpty()) return;
-    currentSongIndex = (currentSongIndex + 1) % songList.size();
+
+    currentSongIndex = (currentSongIndex + 1 + songList.size()) % songList.size();
     player->setSource(songList[currentSongIndex]);
     player->play();
 }

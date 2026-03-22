@@ -7,7 +7,7 @@
 
 SongLibraryWindow::SongLibraryWindow(QWidget *parent) :
     QDialog(parent),
-    songList(new QListWidget(this)) // 这里的songList是窗口控件
+    songList(new QListWidget(this)) // 这里的songList是窗口列表控件
 {
     // 窗口标题，尺寸
     this->setWindowTitle("歌曲库");
@@ -85,13 +85,22 @@ void SongLibraryWindow::on_importBtn_clicked()
     }
 }
 
-// 确定选择歌曲
+// "确定"选择的一首歌曲后
 void SongLibraryWindow::on_confirmBtn_clicked()
 {
-    QListWidgetItem *selected = songList->currentItem(); // 指向选中列表项
-    if (selected) { // 如果选择了一个列表项(指针不是NULL)
-        QString songPath = selected->data(Qt::UserRole).toString(); // 获取歌曲路径
-        emit songSelected(songPath); // 发送"歌曲已选择"信号
-        this->close(); // 关闭窗口
+    QListWidgetItem *selectedItem = songList->currentItem(); // 获取选择的歌曲
+    if (!selectedItem) return;
+
+    QList<QUrl> allSongs; // 全部歌曲清单
+    int selectedIndex = -1; // 索引初始化
+    for (int i = 0; i < songList->count(); i++){ // 全部歌曲清单初始化和寻找欲播放的歌曲索引，并传给主窗口
+        QListWidgetItem *item = songList->item(i);
+        QString path = item->data(Qt::UserRole).toString();
+        allSongs.append(QUrl::fromLocalFile(path));
+        if (item == selectedItem) {
+            selectedIndex = i;
+        }
     }
+    emit songSelected(allSongs, selectedIndex);
+    this->close();
 }

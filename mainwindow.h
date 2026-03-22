@@ -33,7 +33,7 @@ private slots:
     void on_openLibraryBtn_clicked();     // 打开歌库
     void on_prevSongBtn_clicked();        // 上一曲（手动）
     void on_nextSongBtn_clicked();        // 下一曲（手动）
-    void handleSongSelected(const QString &songPath); // 处理选中歌曲
+    void handleSongSelected(const QList<QUrl> &newSongList, int selectedIndex); // 处理选中歌曲
 
 private:
     Ui::MainWindow *ui;                 // 主窗口UI指针
@@ -47,7 +47,7 @@ private:
     QTimer *progressTimer;              // 进度条定时器
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override; // 过滤器
 };
 
 #endif // MAINWINDOW_H

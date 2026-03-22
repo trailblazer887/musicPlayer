@@ -15,7 +15,7 @@ public:
     ~SongLibraryWindow();
 
 signals:
-    void songSelected(const QString &songPath); // 选中歌曲的信号
+    void songSelected(const QList<QUrl> &songList, int selectedIndex); // 选完歌曲点击"确定"后的信号
 
 private slots:
     void on_importBtn_clicked();    // 导入歌曲
