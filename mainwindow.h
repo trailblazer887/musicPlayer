@@ -33,6 +33,7 @@ private slots:
     void on_openLibraryBtn_clicked();     // 打开歌库
     void on_prevSongBtn_clicked();        // 上一曲（手动）
     void on_nextSongBtn_clicked();        // 下一曲（手动）
+    void on_autoNextBtn_clicked();        // 是否自动切换
     void handleSongSelected(const QList<QUrl> &newSongList, int selectedIndex); // 处理选中歌曲
 
 private:
@@ -45,6 +46,7 @@ private:
     QList<QUrl> songList;               // 手动播放列表（存储歌曲路径）
     int currentSongIndex;               // 当前播放下标（-1=无歌曲）
     QTimer *progressTimer;              // 进度条定时器
+    bool autoNextEnabled;               // 是否启用自动切换下一曲
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override; // 过滤器

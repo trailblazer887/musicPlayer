@@ -8,9 +8,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     songLibWindow(nullptr),
     currentSongIndex(-1),
-    progressTimer(new QTimer(this))
+    progressTimer(new QTimer(this)),
+    autoNextEnabled(true)
 {
     ui->setupUi(this); // 加载主窗口UI
+    ui->autoNextBtn->setText("关闭自动切换"); // 自动切换按钮初始化
 
     qApp->installEventFilter(this); // 安装事件过滤器
 
@@ -49,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // 歌曲播放完后自动切换下一曲
     connect(player, &QMediaPlayer::mediaStatusChanged, this, [=](QMediaPlayer::MediaStatus status){
-        if (status == QMediaPlayer::EndOfMedia && !songList.isEmpty()){
+        if (status == QMediaPlayer::EndOfMedia && !songList.isEmpty() && autoNextEnabled){
             on_nextSongBtn_clicked();
         }
     });
@@ -130,10 +132,6 @@ void MainWindow::handleSongSelected(const QList<QUrl> &newSongList, int selected
 // 手动上一曲
 void MainWindow::on_prevSongBtn_clicked()
 {
-    if (songList.size() <= 1) {
-        QMessageBox::information(this, "提示", "当前只有一首歌曲!");
-        return;
-    }
     if (songList.isEmpty()) return;
 
     currentSongIndex = (currentSongIndex - 1 + songList.size()) % songList.size();
@@ -144,10 +142,6 @@ void MainWindow::on_prevSongBtn_clicked()
 // 手动下一曲
 void MainWindow::on_nextSongBtn_clicked()
 {
-    if (songList.size() <= 1) {
-        QMessageBox::information(this, "提示", "当前只有一首歌曲!");
-        return;
-    }
     if (songList.isEmpty()) return;
 
     currentSongIndex = (currentSongIndex + 1 + songList.size()) % songList.size();
@@ -191,5 +185,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
     return QMainWindow::eventFilter(obj, event); // 其他事件默认处理;
 }
 
+// 切换播放状态
+void MainWindow::on_autoNextBtn_clicked(){
+    autoNextEnabled = !autoNextEnabled;
+    if (autoNextEnabled){
+        ui->autoNextBtn->setText("关闭自动切换");
+    }else{
+        ui->autoNextBtn->setText("开启自动切换");
+    }
+}
 
 
