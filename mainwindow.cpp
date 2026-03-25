@@ -85,6 +85,16 @@ void MainWindow::on_progressSlider_sliderMoved(int position)
     }
 }
 
+// 进度条 点击/拖动结束 后跳转进度
+void MainWindow::on_progressSlider_sliderReleased()
+{
+    int position = ui->progressSlider->value();
+    if (player->duration() > 0) {
+        qint64 newPos = (player->duration() * position) / 1000;
+        player->setPosition(newPos);
+    }
+}
+
 // 实时更新进度条(由"定时器"驱动)
 void MainWindow::updateProgressBar()
 {
@@ -179,6 +189,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
             player->setPosition(newPos);
             int sliderValue = static_cast<int>(newPos * 1000 / player->duration());
             ui->progressSlider->setValue(sliderValue);
+            return true;
+        }else if (keyEvent->key() == Qt::Key_Space){ // 空格键控制播放按钮
+            on_playPauseBtn_clicked();
             return true;
         }
     }

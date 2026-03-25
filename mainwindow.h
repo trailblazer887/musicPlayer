@@ -29,6 +29,7 @@ public:
 private slots:
     void on_playPauseBtn_clicked();       // 播放/暂停
     void on_progressSlider_sliderMoved(int position); // 进度条拖动
+    void on_progressSlider_sliderReleased(); // 进度条点击
     void updateProgressBar();             // 实时更新进度条
     void on_openLibraryBtn_clicked();     // 打开歌库
     void on_prevSongBtn_clicked();        // 上一曲（手动）
