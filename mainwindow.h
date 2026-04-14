@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtMultimedia/QMediaPlayer> // QT6.8.3 正确头文件
+#include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QAudioOutput>
 #include <QTimer>
 #include <QList>
